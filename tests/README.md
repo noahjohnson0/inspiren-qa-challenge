@@ -192,6 +192,7 @@ Standardized test sequences in `test-data.ts`:
 - **Trace**: On first retry
 
 # Run in CI mode
+```bash
 CI=true npm test
 ```
 
