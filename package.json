@@ -14,7 +14,19 @@
     "test:debug": "playwright test --debug",
     "test:record": "RECORD_VIDEO=true playwright test",
     "test:record:ui": "RECORD_VIDEO=true playwright test --ui",
-    "test:record:headed": "RECORD_VIDEO=true playwright test --headed"
+    "test:record:headed": "RECORD_VIDEO=true playwright test --headed",
+    "test:cucumber": "cucumber-js --import features/step-definitions/**/*.ts --import features/support/**/*.ts --tags 'not @expected-to-fail'",
+    "test:cucumber:headed": "cucumber-js --import features/step-definitions/**/*.ts --import features/support/**/*.ts --world-parameters '{\"headless\":false}'",
+    "test:cucumber:report": "npm run test:cucumber:report:chromium && npm run test:cucumber:report:firefox && npm run test:cucumber:report:webkit && npm run test:cucumber:report:edge",
+    "test:cucumber:report:chromium": "cucumber-js --import features/step-definitions/**/*.ts --import features/support/**/*.ts --format html:reports/cucumber-report-chromium.html",
+    "test:cucumber:report:firefox": "BROWSER=firefox cucumber-js --import features/step-definitions/**/*.ts --import features/support/**/*.ts --format html:reports/cucumber-report-firefox.html",
+    "test:cucumber:report:webkit": "BROWSER=webkit cucumber-js --import features/step-definitions/**/*.ts --import features/support/**/*.ts --format html:reports/cucumber-report-webkit.html",
+    "test:cucumber:report:edge": "BROWSER=edge cucumber-js --import features/step-definitions/**/*.ts --import features/support/**/*.ts --format html:reports/cucumber-report-edge.html",
+    "test:cucumber:firefox": "BROWSER=firefox cucumber-js --import features/step-definitions/**/*.ts --import features/support/**/*.ts",
+    "test:cucumber:webkit": "BROWSER=webkit cucumber-js --import features/step-definitions/**/*.ts --import features/support/**/*.ts",
+    "test:cucumber:edge": "BROWSER=edge cucumber-js --import features/step-definitions/**/*.ts --import features/support/**/*.ts",
+    "test:cucumber:chrome": "BROWSER=chrome cucumber-js --import features/step-definitions/**/*.ts --import features/support/**/*.ts",
+    "test:cucumber:all": "npm run test:cucumber && npm run test:cucumber:firefox && npm run test:cucumber:webkit && npm run test:cucumber:edge"
   },
   "dependencies": {
     "process": "^0.11.10",
@@ -22,16 +34,20 @@
     "react-dom": "^18.3.1"
   },
   "devDependencies": {
+    "@cucumber/cucumber": "^12.2.0",
     "@eslint/js": "^9.17.0",
     "@playwright/test": "^1.55.1",
+    "@types/cucumber": "^6.0.1",
     "@types/node": "^24.5.2",
     "@types/react": "^18.3.17",
     "@types/react-dom": "^18.3.5",
     "@vitejs/plugin-react": "^4.3.4",
+    "cucumber-html-reporter": "^7.2.0",
     "eslint": "^9.17.0",
     "eslint-plugin-react-hooks": "^5.0.0",
     "eslint-plugin-react-refresh": "^0.4.16",
     "globals": "^15.13.0",
+    "ts-node": "^10.9.2",
     "typescript": "~5.6.2",
     "typescript-eslint": "^8.18.1",
     "vite": "^6.0.3"

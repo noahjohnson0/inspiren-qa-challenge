@@ -1,6 +1,7 @@
-import { expect, Page } from '@playwright/test';
-import { GamePage } from './game-page';
-import { EDGE_CASE_SEQUENCES, X_WINNING_SEQUENCES, O_WINNING_SEQUENCES, DRAW_SEQUENCE, PARTIAL_GAME_SEQUENCES } from './test-data';
+import { expect } from '@playwright/test';
+import type { Page } from '@playwright/test';
+import { GamePage } from './game-page.ts';
+import { EDGE_CASE_SEQUENCES, X_WINNING_SEQUENCES, O_WINNING_SEQUENCES, DRAW_SEQUENCE, PARTIAL_GAME_SEQUENCES } from './test-data.ts';
 
 /**
  * Test utilities for common state verification patterns

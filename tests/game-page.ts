@@ -1,5 +1,6 @@
-import { Page, Locator, expect } from '@playwright/test';
-import { TestUtils } from './test-utils';
+import { expect } from '@playwright/test';
+import type { Page, Locator } from '@playwright/test';
+import { TestUtils } from './test-utils.ts';
 
 /**
  * Page Object Model for the Tic Tac Toe Game
@@ -40,7 +41,7 @@ export class GamePage {
      * Navigate to the game page
      */
     async goto() {
-        await this.page.goto('/');
+        await this.page.goto('http://localhost:5174/');
     }
 
     /**
