@@ -14,7 +14,8 @@
     "test:debug": "playwright test --debug",
     "test:record": "RECORD_VIDEO=true playwright test",
     "test:record:ui": "RECORD_VIDEO=true playwright test --ui",
-    "test:record:headed": "RECORD_VIDEO=true playwright test --headed"
+    "test:record:headed": "RECORD_VIDEO=true playwright test --headed",
+    "parse-tests": "node parse-tests.js"
   },
   "dependencies": {
     "process": "^0.11.10",

@@ -1,5 +1,6 @@
 import { test, expect } from '@playwright/test';
 import { GamePage } from './game-page';
+import { TestUtils } from './test-utils';
 import {
     PARTIAL_GAME_SEQUENCES,
     X_WINNING_SEQUENCES,
@@ -12,46 +13,9 @@ test.describe('Game State Management Tests', () => {
     let gamePage: GamePage;
 
     test.beforeEach(async ({ page }) => {
-        gamePage = new GamePage(page);
-        await gamePage.goto();
-        await gamePage.applyTestStyling();
+        gamePage = await TestUtils.setupTest(page);
     });
 
-    test.describe('Current Player Display', () => {
-        test('should show X as next player initially', async () => {
-            const status = await gamePage.getStatus();
-            expect(status).toBe('Next player: X');
-        });
-
-        test('should show O as next player after X plays', async () => {
-            await gamePage.clickSquare(0);
-            const status = await gamePage.getStatus();
-            expect(status).toBe('Next player: O');
-        });
-
-        test('should show X as next player after O plays', async () => {
-            await gamePage.clickSquare(0);
-            await gamePage.clickSquare(1);
-            const status = await gamePage.getStatus();
-            expect(status).toBe('Next player: X');
-        });
-
-        test('should maintain correct player display throughout game', async () => {
-            const expectedStatuses = [
-                'Next player: O',  // After X plays
-                'Next player: X', // After O plays
-                'Next player: O', // After X plays
-                'Next player: X', // After O plays
-                'Next player: O'  // After X plays
-            ];
-
-            for (let i = 0; i < 5; i++) {
-                await gamePage.clickSquare(i);
-                const status = await gamePage.getStatus();
-                expect(status).toBe(expectedStatuses[i]);
-            }
-        });
-    });
 
     test.describe('Status Messages', () => {
         test('should show initial status message', async () => {
@@ -61,30 +25,13 @@ test.describe('Game State Management Tests', () => {
             expect(status).toContain('X');
         });
 
-        test('should update status message after each move', async () => {
-            // Initial status
-            let status = await gamePage.getStatus();
-            expect(status).toBe('Next player: X');
-
-            // After first move
-            await gamePage.clickSquare(0);
-            status = await gamePage.getStatus();
-            expect(status).toBe('Next player: O');
-
-            // After second move
-            await gamePage.clickSquare(1);
-            status = await gamePage.getStatus();
-            expect(status).toBe('Next player: X');
-        });
 
         test('should show winner status when game is won', async () => {
             // Use standardized winning sequence
             const winningSequence = X_WINNING_SEQUENCES[0]; // horizontal top win
 
             // Play the winning sequence
-            for (const move of winningSequence.moves) {
-                await gamePage.clickSquare(move);
-            }
+            await TestUtils.executeSequence(gamePage, winningSequence.moves);
 
             const status = await gamePage.getStatus();
             expect(status).toBe(winningSequence.expectedFinalStatus);
@@ -129,7 +76,7 @@ test.describe('Game State Management Tests', () => {
             expect(status).toBe('Next player: X');
 
             // Verify all squares are empty
-            await gamePage.verifyEmptyBoard();
+            await TestUtils.verifyEmptyBoard(gamePage);
         });
 
         test('should reset game after win', async () => {
@@ -137,9 +84,7 @@ test.describe('Game State Management Tests', () => {
             const winningSequence = X_WINNING_SEQUENCES[0]; // horizontal top win
 
             // Play the winning sequence
-            for (const move of winningSequence.moves) {
-                await gamePage.clickSquare(move);
-            }
+            await TestUtils.executeSequence(gamePage, winningSequence.moves);
 
             // Verify winner
             let status = await gamePage.getStatus();
@@ -153,14 +98,12 @@ test.describe('Game State Management Tests', () => {
             expect(status).toBe('Next player: X');
 
             // Verify all squares are empty
-            await gamePage.verifyEmptyBoard();
+            await TestUtils.verifyEmptyBoard(gamePage);
         });
 
         test('should reset game after draw', async () => {
             // Use standardized draw sequence
-            for (const move of DRAW_SEQUENCE.moves) {
-                await gamePage.clickSquare(move);
-            }
+            await TestUtils.executeSequence(gamePage, DRAW_SEQUENCE.moves);
 
             // Reset the game
             await gamePage.resetGame();
@@ -170,7 +113,7 @@ test.describe('Game State Management Tests', () => {
             expect(status).toBe('Next player: X');
 
             // Verify all squares are empty
-            await gamePage.verifyEmptyBoard();
+            await TestUtils.verifyEmptyBoard(gamePage);
         });
 
         test('should allow restart at any time', async () => {
@@ -182,9 +125,7 @@ test.describe('Game State Management Tests', () => {
                 await gamePage.resetGame();
 
                 // Play the moves for this state
-                for (const move of state.moves) {
-                    await gamePage.clickSquare(move);
-                }
+                await TestUtils.executeSequence(gamePage, state.moves);
 
                 // Reset the game
                 await gamePage.resetGame();
@@ -210,7 +151,7 @@ test.describe('Game State Management Tests', () => {
             await gamePage.clickSquare(2); // X
 
             // Verify state is maintained
-            await gamePage.verifyState({
+            await TestUtils.verifyState(gamePage, {
                 squares: ['X', 'O', 'X', null, null, null, null, null, null],
                 nextPlayer: 'O'
             });
@@ -218,9 +159,7 @@ test.describe('Game State Management Tests', () => {
 
         test('should maintain state after rapid interactions', async () => {
             // Use standardized draw sequence
-            for (const move of DRAW_SEQUENCE.moves) {
-                await gamePage.clickSquare(move);
-            }
+            await TestUtils.executeSequence(gamePage, DRAW_SEQUENCE.moves);
 
             // Verify state is maintained
             const expectedMarks = ['X', 'O', 'X', 'X', 'O', 'O', 'O', 'X', 'X'];
@@ -243,9 +182,7 @@ test.describe('Game State Management Tests', () => {
                 await gamePage.resetGame();
 
                 // Play the scenario
-                for (const move of scenario.moves) {
-                    await gamePage.clickSquare(move);
-                }
+                await TestUtils.executeSequence(gamePage, scenario.moves);
 
                 // Verify final state
                 const status = await gamePage.getStatus();

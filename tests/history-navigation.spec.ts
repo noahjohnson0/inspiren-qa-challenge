@@ -1,13 +1,12 @@
 import { test, expect } from '@playwright/test';
 import { GamePage } from './game-page';
+import { TestUtils } from './test-utils';
 
 test.describe('History & Navigation Tests', () => {
     let gamePage: GamePage;
 
     test.beforeEach(async ({ page }) => {
-        gamePage = new GamePage(page);
-        await gamePage.goto();
-        await gamePage.applyTestStyling();
+        gamePage = await TestUtils.setupTest(page);
     });
 
     test.describe('Turn History', () => {
@@ -46,7 +45,7 @@ test.describe('History & Navigation Tests', () => {
 
             // Verify state is restored correctly
             // Move 1 = after first move: square 0 = 'X', others empty
-            await gamePage.verifySquareValues({
+            await TestUtils.verifySquareValues(gamePage, {
                 0: 'X', 1: null, 2: null
             });
         });
@@ -61,7 +60,7 @@ test.describe('History & Navigation Tests', () => {
             await gamePage.goToMove(0);
 
             // Verify all squares are empty
-            await gamePage.verifyEmptyBoard();
+            await TestUtils.verifyEmptyBoard(gamePage);
         });
     });
 
@@ -77,7 +76,7 @@ test.describe('History & Navigation Tests', () => {
             await gamePage.goToMove(2);
 
             // Verify state is correctly restored
-            await gamePage.verifyState({
+            await TestUtils.verifyState(gamePage, {
                 squares: ['X', 'O', null, null, null, null, null, null, null],
                 nextPlayer: 'X'
             });
@@ -96,7 +95,7 @@ test.describe('History & Navigation Tests', () => {
             await gamePage.clickSquare(3);
 
             // Verify new move was made
-            await gamePage.verifySquareValues({
+            await TestUtils.verifySquareValues(gamePage, {
                 3: 'O'
             });
         });
@@ -129,7 +128,7 @@ test.describe('History & Navigation Tests', () => {
             await gamePage.goToMove(3);
 
             // Verify final state is correct
-            await gamePage.verifySquareValues({
+            await TestUtils.verifySquareValues(gamePage, {
                 0: 'X', 1: 'O', 2: 'X'
             });
         });

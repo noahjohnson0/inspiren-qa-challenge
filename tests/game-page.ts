@@ -43,73 +43,6 @@ export class GamePage {
         await this.page.goto('/');
     }
 
-    /**
-     * Apply custom styling for tests (black background, white status text)
-     */
-    async applyTestStyling() {
-        // Inject CSS styles
-        await this.page.addStyleTag({
-            content: `
-                html, body, #root {
-                    background-color: #000000 !important;
-                }
-                :root {
-                    background-color: #000000 !important;
-                }
-                .status {
-                    color: white !important;
-                    font-size: 1.2em !important;
-                    margin-bottom: 1rem !important;
-                }
-                .game-info {
-                    color: white !important;
-                }
-                .game-info div {
-                    color: white !important;
-                }
-                .game-info ol {
-                    color: white !important;
-                }
-                .game-info li {
-                    color: white !important;
-                }
-            `
-        });
-
-        // Also directly set styles on elements to ensure they take effect
-        await this.page.evaluate(() => {
-            // Set background on multiple elements
-            const elements = [document.documentElement, document.body];
-            const rootElement = document.getElementById('root');
-            if (rootElement) elements.push(rootElement);
-
-            elements.forEach(el => {
-                if (el) {
-                    (el as HTMLElement).style.setProperty('background-color', '#000000', 'important');
-                }
-            });
-
-            // Set status text color
-            const statusElement = document.querySelector('.status');
-            if (statusElement) {
-                (statusElement as HTMLElement).style.setProperty('color', 'white', 'important');
-                (statusElement as HTMLElement).style.setProperty('font-size', '1.2em', 'important');
-                (statusElement as HTMLElement).style.setProperty('margin-bottom', '1rem', 'important');
-            }
-
-            // Set history text color
-            const gameInfoElement = document.querySelector('.game-info');
-            if (gameInfoElement) {
-                (gameInfoElement as HTMLElement).style.setProperty('color', 'white', 'important');
-
-                // Also set color on child elements
-                const childElements = gameInfoElement.querySelectorAll('div, ol, li');
-                childElements.forEach(el => {
-                    (el as HTMLElement).style.setProperty('color', 'white', 'important');
-                });
-            }
-        });
-    }
 
     /**
      * Get all square elements as an array
@@ -215,7 +148,15 @@ export class GamePage {
     }
 
     /**
-     * Convenience method to verify game state using TestUtils
+     * Convenience method to verify square values
+     * @param squareValues - Object mapping square indices to expected values
+     */
+    async verifySquareValues(squareValues: Record<number, string | null>) {
+        await TestUtils.verifySquareValues(this, squareValues);
+    }
+
+    /**
+     * Convenience method to verify game state
      * @param expectedState - Object describing expected state
      */
     async verifyState(expectedState: {
@@ -228,21 +169,6 @@ export class GamePage {
     }
 
     /**
-     * Convenience method to verify square values
-     * @param squareValues - Object mapping square indices to expected values
-     */
-    async verifySquareValues(squareValues: Record<number, string | null>) {
-        await TestUtils.verifySquareValues(this, squareValues);
-    }
-
-    /**
-     * Convenience method to verify initial state
-     */
-    async verifyInitialState() {
-        await TestUtils.verifyInitialState(this);
-    }
-
-    /**
      * Convenience method to verify winning state
      * @param winner - The expected winner ('X' or 'O')
      * @param winningSquares - Array of square indices that should contain the winning mark
@@ -252,10 +178,10 @@ export class GamePage {
     }
 
     /**
-     * Convenience method to verify draw state
+     * Convenience method to verify initial state
      */
-    async verifyDrawState() {
-        await TestUtils.verifyDrawState(this);
+    async verifyInitialState() {
+        await TestUtils.verifyInitialState(this);
     }
 
     /**
@@ -271,4 +197,5 @@ export class GamePage {
     async verifyFullBoard() {
         await TestUtils.verifyFullBoard(this);
     }
+
 }

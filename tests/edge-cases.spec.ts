@@ -28,7 +28,7 @@ test.describe('Edge Cases & Error Handling Tests', () => {
             await TestUtils.executeSequence(gamePage, sequence.moves);
 
             // Verify correct marks were placed
-            await gamePage.verifySquareValues({
+            await TestUtils.verifySquareValues(gamePage, {
                 0: 'X', 1: 'O', 2: 'X',
                 3: 'O', 4: 'X', 5: 'O'
             });
@@ -37,13 +37,11 @@ test.describe('Edge Cases & Error Handling Tests', () => {
         test('should handle rapid clicking during win sequence', async () => {
             const sequence = EDGE_CASE_SEQUENCES.find(s => s.name === 'rapid_clicking_win_sequence');
 
-            for (const move of sequence!.moves) {
-                await gamePage.clickSquare(move);
-            }
+            await TestUtils.executeSequence(gamePage, sequence!.moves);
 
             // Verify winner is detected and winning row is correct
-            await gamePage.verifyWinningState('X', [0, 2, 4, 6]);
-            await gamePage.verifySquareValues({
+            await TestUtils.verifyWinningState(gamePage, 'X', [0, 2, 4, 6]);
+            await TestUtils.verifySquareValues(gamePage, {
                 0: 'X', 1: 'O', 2: 'X',
                 3: 'O', 4: 'X', 5: 'O',
                 6: 'X'
@@ -54,9 +52,7 @@ test.describe('Edge Cases & Error Handling Tests', () => {
             const sequence = EDGE_CASE_SEQUENCES.find(s => s.name === 'rapid_clicking_after_game_ends');
 
             // Create a winning scenario
-            for (const move of sequence!.moves) {
-                await gamePage.clickSquare(move);
-            }
+            await TestUtils.executeSequence(gamePage, sequence!.moves);
 
             // Rapidly click squares after game ends
             for (let i = 0; i < 20; i++) {
@@ -67,8 +63,8 @@ test.describe('Edge Cases & Error Handling Tests', () => {
             }
 
             // Verify winner status is maintained and empty squares remain empty
-            await gamePage.verifyWinningState('X', [0, 1, 2]);
-            await gamePage.verifySquareValues({
+            await TestUtils.verifyWinningState(gamePage, 'X', [0, 1, 2]);
+            await TestUtils.verifySquareValues(gamePage, {
                 5: null, 6: null, 7: null, 8: null
             });
         });
@@ -78,12 +74,10 @@ test.describe('Edge Cases & Error Handling Tests', () => {
         test('should handle clicking occupied squares', async () => {
             const sequence = EDGE_CASE_SEQUENCES.find(s => s.name === 'clicking_occupied_squares');
 
-            for (const move of sequence!.moves) {
-                await gamePage.clickSquare(move);
-            }
+            await TestUtils.executeSequence(gamePage, sequence!.moves);
 
             // Verify marks haven't changed
-            await gamePage.verifySquareValues({
+            await TestUtils.verifySquareValues(gamePage, {
                 0: 'X', 1: 'O', 2: 'X'
             });
         });
@@ -91,12 +85,10 @@ test.describe('Edge Cases & Error Handling Tests', () => {
         test('should handle clicking occupied squares multiple times', async () => {
             const sequence = EDGE_CASE_SEQUENCES.find(s => s.name === 'clicking_occupied_multiple_times');
 
-            for (const move of sequence!.moves) {
-                await gamePage.clickSquare(move);
-            }
+            await TestUtils.executeSequence(gamePage, sequence!.moves);
 
             // Verify mark hasn't changed
-            await gamePage.verifySquareValues({
+            await TestUtils.verifySquareValues(gamePage, {
                 0: 'X'
             });
         });
@@ -104,12 +96,10 @@ test.describe('Edge Cases & Error Handling Tests', () => {
         test('should handle clicking occupied squares after game ends', async () => {
             const sequence = EDGE_CASE_SEQUENCES.find(s => s.name === 'clicking_occupied_after_game_ends');
 
-            for (const move of sequence!.moves) {
-                await gamePage.clickSquare(move);
-            }
+            await TestUtils.executeSequence(gamePage, sequence!.moves);
 
             // Verify marks haven't changed
-            await gamePage.verifySquareValues({
+            await TestUtils.verifySquareValues(gamePage, {
                 0: 'X', 1: 'X', 2: 'X'
             });
         });
@@ -167,9 +157,7 @@ test.describe('Edge Cases & Error Handling Tests', () => {
                 await gamePage.resetGame();
 
                 // Play the scenario
-                for (const move of scenario.sequence.moves) {
-                    await gamePage.clickSquare(move);
-                }
+                await TestUtils.executeSequence(gamePage, scenario.sequence.moves);
 
                 // Verify expected outcome
                 const status = await gamePage.getStatus();
@@ -188,9 +176,11 @@ test.describe('Edge Cases & Error Handling Tests', () => {
                 // Reset game before each test to ensure clean state
                 await gamePage.resetGame();
 
-                for (const move of sequence.moves) {
-                    await gamePage.clickSquare(move);
-                    const squareValue = await gamePage.getSquareValue(move);
+                await TestUtils.executeSequence(gamePage, sequence.moves);
+
+                // Verify each move was placed correctly
+                for (let i = 0; i < sequence.moves.length; i++) {
+                    const squareValue = await gamePage.getSquareValue(sequence.moves[i]);
                     expect(squareValue).toBe('X');
                 }
             }
@@ -202,9 +192,7 @@ test.describe('Edge Cases & Error Handling Tests', () => {
             const sequence = EDGE_CASE_SEQUENCES.find(s => s.name === 'rapid_reset_operations');
 
             // Play some moves
-            for (const move of sequence!.moves) {
-                await gamePage.clickSquare(move);
-            }
+            await TestUtils.executeSequence(gamePage, sequence!.moves);
 
             // Rapidly reset multiple times
             for (let i = 0; i < 5; i++) {
@@ -212,18 +200,16 @@ test.describe('Edge Cases & Error Handling Tests', () => {
             }
 
             // Verify game is in clean state
-            await gamePage.verifyInitialState();
+            await TestUtils.verifyInitialState(gamePage);
         });
 
         test('should handle mixed valid and invalid operations', async () => {
             const sequence = EDGE_CASE_SEQUENCES.find(s => s.name === 'mixed_valid_invalid_operations');
 
-            for (const move of sequence!.moves) {
-                await gamePage.clickSquare(move);
-            }
+            await TestUtils.executeSequence(gamePage, sequence!.moves);
 
             // Verify correct state
-            await gamePage.verifyState({
+            await TestUtils.verifyState(gamePage, {
                 squares: ['X', 'O', 'X', null, null, null, null, null, null],
                 nextPlayer: 'O'
             });
@@ -249,7 +235,7 @@ test.describe('Edge Cases & Error Handling Tests', () => {
             }
 
             // Verify final state is consistent
-            await gamePage.verifyState({
+            await TestUtils.verifyState(gamePage, {
                 squares: [null, null, null, 'X', null, null, null, null, null],
                 nextPlayer: 'O'
             });
@@ -262,13 +248,11 @@ test.describe('Edge Cases & Error Handling Tests', () => {
 
             // Perform many rapid operations
             for (let i = 0; i < 100; i++) {
-                for (const move of sequence!.moves) {
-                    await gamePage.clickSquare(move);
-                }
+                await TestUtils.executeSequence(gamePage, sequence!.moves);
             }
 
             // Verify state is correct
-            await gamePage.verifySquareValues({
+            await TestUtils.verifySquareValues(gamePage, {
                 0: 'X', 1: 'O', 2: 'X'
             });
 
@@ -280,13 +264,11 @@ test.describe('Edge Cases & Error Handling Tests', () => {
             // Perform rapid reset and play cycles
             for (let cycle = 0; cycle < 10; cycle++) {
                 await gamePage.resetGame();
-                for (const move of sequence!.moves) {
-                    await gamePage.clickSquare(move);
-                }
+                await TestUtils.executeSequence(gamePage, sequence!.moves);
             }
 
             // Verify final state
-            await gamePage.verifySquareValues({
+            await TestUtils.verifySquareValues(gamePage, {
                 0: 'X', 1: 'O', 2: 'X'
             });
         });

@@ -138,17 +138,6 @@ export class TestUtils {
         await this.verifyFullBoard(gamePage);
     }
 
-    /**
-     * Verify that marks haven't changed after invalid moves
-     * @param gamePage - The GamePage instance
-     * @param expectedMarks - Object mapping square indices to expected values
-     */
-    static async verifyMarksUnchanged(
-        gamePage: GamePage,
-        expectedMarks: Record<number, string | null>
-    ) {
-        await this.verifySquareValues(gamePage, expectedMarks);
-    }
 
     /**
      * Verify turn alternation pattern
@@ -195,26 +184,6 @@ export class TestUtils {
         await this.verifyInitialState(gamePage);
     }
 
-    /**
-     * Verify specific square patterns (useful for testing different win conditions)
-     * @param gamePage - The GamePage instance
-     * @param pattern - Object describing the pattern
-     */
-    static async verifySquarePattern(
-        gamePage: GamePage,
-        pattern: {
-            name: string;
-            squares: Record<number, string | null>;
-            status?: string;
-        }
-    ) {
-        await this.verifySquareValues(gamePage, pattern.squares);
-
-        if (pattern.status) {
-            const actualStatus = await gamePage.getStatus();
-            expect(actualStatus).toBe(pattern.status);
-        }
-    }
 
     /**
      * Test setup utility - eliminates repetitive beforeEach patterns
@@ -224,7 +193,6 @@ export class TestUtils {
     static async setupTest(page: Page): Promise<GamePage> {
         const gamePage = new GamePage(page);
         await gamePage.goto();
-        await gamePage.applyTestStyling();
         return gamePage;
     }
 
@@ -314,7 +282,7 @@ export class TestUtils {
                     const status = await gamePage.getStatus();
                     expect(status).not.toContain('Winner:');
                 } else {
-                    await gamePage.verifyWinningState(expectedOutcome.winner, sequence.moves);
+                    await TestUtils.verifyWinningState(gamePage, expectedOutcome.winner, sequence.moves);
                 }
             }
 
@@ -324,7 +292,8 @@ export class TestUtils {
             }
 
             if (expectedOutcome.squares) {
-                await gamePage.verifySquareValues(
+                await TestUtils.verifySquareValues(
+                    gamePage,
                     Object.fromEntries(expectedOutcome.squares.map((value, index) => [index, value]))
                 );
             }
