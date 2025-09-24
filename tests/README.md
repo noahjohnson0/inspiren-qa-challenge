@@ -2,7 +2,7 @@
 
 This directory contains comprehensive end-to-end tests for the Tic Tac Toe game built with Playwright.
 
-## 📋 Test Overview
+## Test Overview
 
 - **Total Tests**: 83 test cases across 6 test files
 - **Browsers**: Chromium, Firefox, WebKit, Microsoft Edge
