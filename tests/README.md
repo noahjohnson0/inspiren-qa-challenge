@@ -8,6 +8,7 @@ This directory contains comprehensive end-to-end tests for the Tic Tac Toe game 
 - **Browsers**: Chromium, Firefox, WebKit, Microsoft Edge
 - **Coverage**: All user flows, edge cases, and game rules
 - **Architecture**: Page Object Model
+- **CI Integration**: Runs on push to main, run on manual user trigger, publishes most recent report to gh pages, right now runs all four major browser
 
 ## Quick Start
 
@@ -212,7 +213,7 @@ CI=true npm test
 - Implementation details unrelated to business logic
 
 ### Test Design Philosophy
-- **Explicit over Dynamic**: Hardcoded test cases for better readability - would reconsider if more variation (4x4 grid?)
+- **Explicit over Dynamic**: Hardcoded test cases for better readability - would reconsider if more variation (4x4 grid anyone?)
 - **Comprehensive Coverage**: All possible game scenarios
 - **Maintainable Structure**: Clear organization and reusable components
 - **Professional Standards**: Enterprise-grade testing practices
