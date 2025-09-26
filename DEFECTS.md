@@ -35,3 +35,5 @@ Players with mobility issues or inability to use a mouse might not be able to pl
 ## Game history should have a pointer or other ui element to distinguish what move we are currently viewing
 Its good that the user can click to go to a specific move, and the game reacts accordingly, but we should
 better specify what move we are on. Should write follow up test once dev fixes
+
+## On some mobile devices, user cannot view full game history without scrolling
