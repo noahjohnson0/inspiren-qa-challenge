@@ -30,3 +30,8 @@ specified to prevent the game board from moving left when the first player turn 
 
 ## No keyboard cmds / poor accessability support
 Players with mobility issues or inability to use a mouse might not be able to play the game
+
+
+## Game history should have a pointer or other ui element to distinguish what move we are currently viewing
+Its good that the user can click to go to a specific move, and the game reacts accordingly, but we should
+better specify what move we are on. Should write follow up test once dev fixes
